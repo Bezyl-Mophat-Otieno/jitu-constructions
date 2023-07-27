@@ -34,5 +34,5 @@ const getPool = async ()=>{
 
 
 // export the sqlconfig 
-module.exports = {getPool}
+module.exports = { sqlConfig, getPool}
 
