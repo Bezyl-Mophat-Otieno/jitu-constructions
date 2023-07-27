@@ -1,9 +1,7 @@
 const {v4} = require('uuid')
 const {sqlConfig} = require('../config/config')
 const mssql = require('mssql')
-const {createProjectTable} = require('../database/tables/projectTable')
 
-const projects = [];
 
 
 class Project{
@@ -21,6 +19,7 @@ class Project{
 const createProject = async(req, res)=>{
     try {
         const id = v4()
+        console.log(req.info)
 
         const {project_name, description, project_location, startdate, enddate} = req.body
 
