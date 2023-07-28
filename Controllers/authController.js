@@ -1,9 +1,7 @@
 // require , jwt , bcrypt , mssql , uuid
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const mssql = require('mssql')
 const {v4} = require('uuid')
-const {getPool} = require('../config/config')
 const {createEmployeeTable} = require('../database/tables/createTables')
 const {loginSchema, registerSchema} = require('../validators/employeeValidators')
 const DB = require('../dBHelpers')
@@ -41,14 +39,14 @@ const loginEmployee = async(req, res)=>{
 try {
 
     const {email, password} = req.body
-    // validate the inputs using roi
+    // validate the inputs using Joi
     const {error} = loginSchema.validate(req.body)
 
     if(error){
         return res.status(422).json({message:error.details[0].message})
     }
 
-    const user = await DB.exec(loginEmployee).recordset[0]
+    const user = await DB.exec('loginEmployee',{email}).recordset[0]
 
 
 

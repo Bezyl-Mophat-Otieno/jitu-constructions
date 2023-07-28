@@ -1,6 +1,4 @@
 const jwt = require('jsonwebtoken');
-const { sqlConfig } = require('../config/config');
-const mssql = require('mssql');
 require('dotenv').config();
 
 

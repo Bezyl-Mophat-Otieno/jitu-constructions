@@ -4,10 +4,6 @@
  // a sigleton class to handle a connection and the execution of queries 
 
  class DB {
-
-    
-
-
     static async getRequest (){
         let pool = await mssql.connect(sqlConfig)
         return pool.request()
