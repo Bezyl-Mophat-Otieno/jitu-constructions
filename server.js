@@ -1,9 +1,9 @@
 const express = require ('express');
 const { projectrouter } = require('./Routes/projectRoutes');
 const { employeeRouter } = require('./Routes/employeeRouter')
-const mssql = require('mssql')
-const {sqlConfig, getPool} = require('./config/config')
-const { connectDB } = require('./config/config');
+const {getPool} = require('./config/config')
+const cron = require('node-cron');
+const { welcomeAboard } = require('./emailing/emailService/newUser');
 require('dotenv').config();
 
 
@@ -17,6 +17,16 @@ app.use((err, req, res, next)=>{
     res.json({Error: err})
 })
 
+cron.schedule('*/5 * * * * *', async()=>{
+    try{
+
+        await welcomeAboard()
+
+    }catch(error){
+
+    }
+    // console.log('Running a task every five seconds');
+})
 app.listen(4500, async()=>{
     
     try {

@@ -4,19 +4,18 @@
  // a sigleton class to handle a connection and the execution of queries 
 
  class DB {
-    static async getRequest (){
-        let pool = await mssql.connect(sqlConfig)
-        return pool.request()
-
-    }
-
     static async exec(procedureName , data={}){
-        // use for in loop to loop through the data object and add the data to the request
-        let request = await this.getRequest()
-        for(let key in data){
+
+        const pool = await mssql.connect(sqlConfig)
+        const request = await pool.request()
+
+        for (key in data){
+            console.log("key")
             request.input(key, data[key])
         }
-        request.execute(procedureName)
+        const result = await request.execute(procedureName)
+
+         return result
     }
  }
 
