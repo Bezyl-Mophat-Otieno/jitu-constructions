@@ -8,7 +8,7 @@
         const pool = await mssql.connect(sqlConfig)
         const request = await pool.request()
 
-        for (key in data){
+        for (let key in data){
             request.input(key, data[key])
         }
         const result = await request.execute(procedureName)
@@ -17,4 +17,6 @@
     }
  }
 
+
  module.exports = DB
+

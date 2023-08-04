@@ -20,6 +20,7 @@ const welcomeAboard = async (req,res) => {
                     subject: 'Welcome Aboard',
                     html
                 }
+                console.log(html)
 
                 await sendMail(message)
 
@@ -41,6 +42,7 @@ const welcomeAboard = async (req,res) => {
 
     }
 }
+welcomeAboard()
 
 module.exports = {
     welcomeAboard

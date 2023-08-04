@@ -5,6 +5,7 @@ const {v4} = require('uuid')
 const {createEmployeeTable} = require('../database/tables/createTables')
 const {loginSchema, registerSchema} = require('../validators/employeeValidators')
 const DB = require('../dBHelpers')
+const crypto = require('crypto')
 
 
 const  createEmployee = async(req, res)=>{
@@ -15,22 +16,27 @@ const  createEmployee = async(req, res)=>{
         const id = v4()
         const {e_name, email, password, } = req.body
 
-        const {error} = registerSchema.validate(req.body)
-
-        if(error){
-            return res.status(422).json({message:error.details[0].message})
+        if(!e_name || !email || !password){
+           
+            return res.status(422).json({message:'All fields are required'})
         }
+
+        // const {error} = registerSchema.validate(req.body)
+
+        // if(error){
+        //     return res.status(422).json({message:error.details[0].message})
+        // }
         
         const hashedPassword = await bcrypt.hash(password, 5)
         await DB.exec('createEmployee', {id, e_name, email, password:hashedPassword})
 
-        res.json('Employee Created Successfully')    
+        res.status(200).json({message:'Employee Created Successfully'})    
     } catch (error) {
+
+        res.status(500).json({message:error.message || "Internal Server"})
         console.log(error)
         
     }
-
-
 
 }
 
@@ -46,7 +52,8 @@ try {
         return res.status(422).json({message:error.details[0].message})
     }
 
-    const user = await DB.exec('loginEmployee',{email}).recordset[0]
+    const user = await (await DB.exec('loginEmployee',{email})).recordset[0]
+    console.log(user)
 
 
 
@@ -75,11 +82,26 @@ try {
     
 } catch (error) {
     console.log(error)
-    
 }
 
 
 }
 
-module.exports = {createEmployee, loginEmployee}
+
+//TESTING OUT MOCKING IN JEST
+const generateBytes = async () => {
+    const bytes = await crypto.randomBytes(16);
+    return bytes;
+
+}
+
+const generateUUid = async () => {
+
+    const id = await v4()
+    return id
+}
+
+
+
+module.exports = {createEmployee, loginEmployee , generateBytes ,generateUUid }
 

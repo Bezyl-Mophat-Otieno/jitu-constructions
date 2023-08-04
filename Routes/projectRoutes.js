@@ -4,7 +4,7 @@ const { tokenValidator } = require('../middleware/tokenValidator');
 
 const projectrouter = Router();
 
-projectrouter.post('/',tokenValidator,createProject);
+projectrouter.post('/',createProject);
 projectrouter.get('/', getProjects);
 projectrouter.get('/:id', getOneProject);
 projectrouter.put('/:id', updateProject);

@@ -1,6 +1,7 @@
 const {v4} = require('uuid')
 const {sqlConfig} = require('../config/config')
 const mssql = require('mssql')
+const {StatusCodes} = require('http-status-codes')
 
 
 
@@ -19,13 +20,17 @@ class Project{
 const createProject = async(req, res)=>{
     try {
         const id = v4()
-        console.log(req.info)
 
         const {project_name, description, project_location, startdate, enddate} = req.body
 
+        if(!project_name || !description || !project_location || !startdate || !enddate){
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: 'All fields are required'
+            })
+        }else{
+
         const pool = await mssql.connect(sqlConfig)
 
-        if(pool.connected){
           const result =  await pool.request()
             .input('id', mssql.VarChar, id)
             .input('project_name', mssql.VarChar, project_name)
@@ -35,19 +40,16 @@ const createProject = async(req, res)=>{
             .input('enddate', mssql.Date, enddate)
             .execute('createProject')
 
-            if(result.rowsAffected ==1){
-                res.json({
+            if(result?.rowsAffected == 1){
+                res.status(201).json({
                     message: 'project created successfully',
                 })
             }else{
-                res.json({
-                    message: 'project not created'
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: 'Procedure does not exist'
                 })
             }
         }
-
-
-
     } catch (error) {
         return res.json({error})
     }
@@ -84,7 +86,15 @@ const getOneProject = async(req, res)=>{
             const result = await pool.request().input('id',mssql.VarChar, id)
             .execute('getOneProject');
             const project = result.recordset;
+
+            if (project.length == 0){
+                return res.status(404).json({
+                    message: 'project not found'
+                })
+            }else{
             return res.json(project)
+
+            }
         }
         
     } catch (error) {
@@ -118,9 +128,13 @@ const updateProject = async(req, res)=>{
                     message: 'project updated successfully'
                 })
             }else{
-                res.json({
+
+                setTimeout(()=>{
+                     res.status(500).json({
                     message: 'project not updated'
                 })
+                },2000)
+               
             }
 
         }
@@ -148,7 +162,7 @@ const deleteProject = async (req, res)=>{
                     message: 'project deleted successfully'
                 })
             }else{
-                    res.json({message:'Something went wrong project was not deleted'})
+                    res.status(500).json({message:'Something went wrong project was not deleted'})
                 }
             
 
