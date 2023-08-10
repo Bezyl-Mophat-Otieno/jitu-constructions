@@ -20,7 +20,7 @@ app.use((err, req, res, next)=>{
 cron.schedule('*/5 * * * * *', async()=>{
     try{
 
-        await welcomeAboard()
+        await welcomeAboard(req,res)
 
     }catch(error){
 

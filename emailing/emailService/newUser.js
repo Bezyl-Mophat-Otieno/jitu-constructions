@@ -2,47 +2,57 @@ const DB = require('../../dBHelpers');
 const ejs = require ('ejs');
 const { sendMail } = require('../email');
 const { getPool } = require('../../config/config');
+const {StatusCodes} = require('http-status-codes')
 
 
 const welcomeAboard = async (req,res) => {
 
+
     try{
 
         const users = await (await DB.exec('mailingList')).recordset
+        if(users.length === 0) {
+            return res.status(StatusCodes.NOT_FOUND).json({message:'No users in the mailing list'})
+
+        }else{
+
+        
         for(let user of users){
-            ejs.renderFile('../../Templates/welcomeUser.ejs', {email: user.email}, async(err, html) => {
-
-               try {
-
+            ejs.renderFile('../../Templates/welcomeUser.ejs', {email: user.email}, async(error, html) => {
+                
+                if(error=='error' && html ==null){
+                   return  res.status(StatusCodes.NOT_FOUND).json({message:'File not found'})
+                }else{
                 const message = {
                     from : process.env.EMAIL,
                     to: user.email,
                     subject: 'Welcome Aboard',
                     html
                 }
-                console.log(html)
 
                 await sendMail(message)
+              const result = (await DB.exec('sendMail', {email:user.email}))
 
-                const pool = await getPool()
+              if(result.rowsAffected == [1]){
+                return res.status(StatusCodes.CREATED).json({message:'Email sent successfully'})
+              }else{   
+                return res.status(StatusCodes.BAD_REQUEST).json({message:'Procedure does not exist'})
 
-                await pool.request().query(`UPDATE employeesTable SET isSent = 1 WHERE email = '${user.email}'`)
-               } catch (error) {
-
-                console.log(error)
-                
-               }
+              }   
+            }
         
         })
 
        }
-
-
+    }
     }catch(error){
-
+        console.log(error)
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:'Internal Server Error'})
+    
     }
 }
-welcomeAboard()
+
+
 
 module.exports = {
     welcomeAboard
