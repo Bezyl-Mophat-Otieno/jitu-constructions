@@ -19,8 +19,8 @@ app.use((err, req, res, next)=>{
 
 cron.schedule('*/5 * * * * *', async()=>{
     try{
-
-        await welcomeAboard(req,res)
+        // console.log('Running a task every five seconds')
+        // await welcomeAboard()
 
     }catch(error){
 

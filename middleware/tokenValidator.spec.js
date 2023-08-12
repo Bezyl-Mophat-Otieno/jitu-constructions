@@ -18,7 +18,7 @@ describe('Checking Validity of tokens', () => {
         expect(mockedRes.json).toBeCalledWith({message:'Unauthorized'})
     })
 
-    it('should return an error if the token is invalid', async () => {
+    it('should return success if the token is valid', async () => {
 
 
         const mockedReq = {

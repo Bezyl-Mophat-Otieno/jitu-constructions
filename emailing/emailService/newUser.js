@@ -5,23 +5,36 @@ const { getPool } = require('../../config/config');
 const {StatusCodes} = require('http-status-codes')
 
 
-const welcomeAboard = async (req,res) => {
+const welcomeAboard = async (req , res) => {
 
 
     try{
 
-        const users = await (await DB.exec('mailingList')).recordset
-        if(users.length === 0) {
+        const data = await (await DB.exec('mailingList'))
+        const users = data.recordset
+        if(users?.length === 0) {
             return res.status(StatusCodes.NOT_FOUND).json({message:'No users in the mailing list'})
 
         }else{
-
-        
         for(let user of users){
-            ejs.renderFile('../../Templates/welcomeUser.ejs', {email: user.email}, async(error, html) => {
+
+
+            const path = ''
+            const data = {}
+
+            
+            
+            ejs.renderFile(path, data , async(error, html) => {
+                console.log(path, data)
+                if(path === '' || data === {}){
+                    console.log('Path or data not provided')
+                    return res.status(StatusCodes.BAD_REQUEST).json({message:'Path or data not provided'})
+                    
+                }
                 
-                if(error=='error' && html ==null){
-                   return  res.status(StatusCodes.NOT_FOUND).json({message:'File not found'})
+                if(error){
+                    throw new Error({message:'File not found'})
+                //    return  res.status(StatusCodes.NOT_FOUND).json({message:'File not found'})
                 }else{
                 const message = {
                     from : process.env.EMAIL,
@@ -34,9 +47,11 @@ const welcomeAboard = async (req,res) => {
               const result = (await DB.exec('sendMail', {email:user.email}))
 
               if(result.rowsAffected == [1]){
-                return res.status(StatusCodes.CREATED).json({message:'Email sent successfully'})
+                console.log('Data fields updated successfully')
+                // return res.status(StatusCodes.CREATED).json({message:'Email sent successfully'})
               }else{   
-                return res.status(StatusCodes.BAD_REQUEST).json({message:'Procedure does not exist'})
+                  throw new Error({message:'Data Fields not updated'})
+                // return res.status(StatusCodes.BAD_REQUEST).json({message:'Procedure does not exist'})
 
               }   
             }
