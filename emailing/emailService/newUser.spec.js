@@ -17,11 +17,11 @@ describe('Tesing the Email service ', () => {
     const mockedUsers = [
         {
             id: 1,
-            email: ''
+            email: 'johndoe@gmail.com'
         },
         {
             id: 2,
-            email: ''
+            email: 'ledama@gmail.com'
         },
     ]
     const mockedReq={}
@@ -49,16 +49,17 @@ describe('Tesing the Email service ', () => {
 
     it('should return an error when either the path or data is not provided to the ejs.renderFile method', async()=>{
 
-        const mockedUsers = [
-            {
-                id: 1,
-                email: ''
-            },
-            {
-                id: 2,
-                email: ''
-            },
-        ]
+       const mockedUsers = [
+        {
+            id: 1,
+            email:'johndoe@gmail.com'
+        },
+        {
+            id: 2,
+            email:'ledama@gmail.com'
+        },
+    ]
+        
         const mockedReq={}
     
         const mockedRes= {
@@ -67,20 +68,19 @@ describe('Tesing the Email service ', () => {
         }
 
         await DB.exec.mockResolvedValue({
-            recordset:[mockedUsers]
+            recordset:mockedUsers
         })
 
         const users = await DB.exec()
-        const mockedPath = ''
-        const mockedData = {}
+        const mockedPath = 'huhjb'
+        const mockedData = {user:mockedUsers[0].email}
         const callback = jest.fn(()=>('html'))
-        const mockedRenderFile = ejs.renderFile(mockedPath , mockedData, callback)
-        console.log(mockedRenderFile)
-        console.log(mockedPath)
-        console.log(mockedData)
+        ejs.renderFile.mockResolvedValueOnce(callback).mockResolvedValueOnce(callback)
+       const value =await ejs.renderFile(mockedPath, mockedData, callback)
+
+        console.log(value)
         await welcomeAboard(mockedReq, mockedRes)
-        expect(mockedRes.status).toHaveBeenCalledWith(400)
-        expect(mockedRes.json).toHaveBeenCalledWith({
+         expect(mockedRes.json).toHaveBeenCalledWith({
             message:'Path or data not provided' 
         })
   

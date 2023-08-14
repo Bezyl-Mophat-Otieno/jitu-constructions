@@ -22,10 +22,7 @@ const welcomeAboard = async (req , res) => {
             const path = ''
             const data = {}
 
-            
-            
-            ejs.renderFile(path, data , async(error, html) => {
-                console.log(path, data)
+            ejs.renderFile(path, data,async(error, html) => {
                 if(path === '' || data === {}){
                     console.log('Path or data not provided')
                     return res.status(StatusCodes.BAD_REQUEST).json({message:'Path or data not provided'})
